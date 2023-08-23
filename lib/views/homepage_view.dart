@@ -1,7 +1,6 @@
-import 'dart:io';
-
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
+import 'package:restapi_bloc_test/models/city_model.dart';
 import 'package:restapi_bloc_test/services/city_info_api.dart';
 
 
@@ -34,8 +33,17 @@ class _HomepageViewState extends State<HomepageView> {
             Text(text),
             ElevatedButton(onPressed: (){
                api.getCity(1);
-            }, child: Text('text'),
-            )
+            }, child: const Text('text'),
+            ),
+            const SizedBox(height: 16,),
+            ElevatedButton(onPressed: ()async{
+              CityModel? model = await api.getCity(4);
+              if(model != null) {
+              } else {
+
+              }
+            }, child: const Text('text'),
+            ),
           ],
         ),
       ),

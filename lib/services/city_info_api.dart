@@ -1,28 +1,47 @@
+import 'dart:io';
+
 import 'package:dio/dio.dart';
-import 'package:http/http.dart' as http;
+import 'package:restapi_bloc_test/models/city_model.dart';
 
 class CityInfoApi extends ICityInfo {
   //Get Set the base url
-  String baseUrl = "https://192.168.1.41";
+  String baseUrl = "http://192.168.1.41:7021/api";
   final Dio _dio;
 
   CityInfoApi(Dio dio) : _dio = dio;
 
   @override
-  void getCities() {
-    // TODO: implement getCities
+  Future<List<CityModel>?> getCities() async {
+    final endpoint = "$baseUrl/cities";
+    try {
+      var response = await _dio.get(
+        endpoint,
+      );
+      List<CityModel> cityModelList = [];
+
+      if (response.statusCode == HttpStatus.ok) {
+        for (var city in response.data) {
+          cityModelList.add(CityModel.fromJson(city));
+        }
+        return cityModelList;
+      } else {
+        return null;
+      }
+    } catch (e) {
+      return null;
+    }
   }
 
   @override
-  void getCity(int cityId) async {
-    try {
-      var response = await http.get(Uri.parse("$baseUrl/api/cities"),headers: {
-        'Content-Type': 'application/json',
-      } );
-      print(response.statusCode);
-      print(response.toString());
-    } catch (e) {
-      print(e);
+  Future<CityModel?> getCity(int cityId) async {
+    final endpoint = "$baseUrl/cities/$cityId";
+
+    var response = await _dio.get(endpoint);
+
+    if(response.statusCode == 200) {
+      return CityModel.fromJson(response.data);
+    } else {
+      return null;
     }
   }
 
@@ -33,7 +52,7 @@ class CityInfoApi extends ICityInfo {
 }
 
 abstract class ICityInfo {
-  void getCities();
-  void getCity(int cityId);
+  Future<List<CityModel>?> getCities();
+  Future<CityModel?> getCity(int cityId);
   void getPointOfInterests(int cityId);
 }
